@@ -5,6 +5,8 @@ CC = cc
 # FLAGS = -Wextra -Wall -Werror -g -fPIE
 FLAGS = -g -fPIE
 
+all: $(NAME)
+
 a: $(NAME)
 	./pipex infile "ls -la" "wc -l" outfile
 	@echo outfile =
@@ -50,8 +52,6 @@ libtest:
 # ╭──────────────────────────────────────────────────────────────────────╮
 # │                  	 	       PROJECT                   	         │
 # ╰──────────────────────────────────────────────────────────────────────╯
-
-all: $(NAME)
 
 $(NAME): libft $(OBJ)
 	@cc $(FLAGS) $(OBJ) main.c -I$(HEADER_FOLDER) lib/libft.a -o $(NAME)
