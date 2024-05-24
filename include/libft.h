@@ -22,9 +22,12 @@
 # include <stdlib.h>
 # include <string.h>
 # include <unistd.h>
+# include <sys/stat.h>
+// # include <sys/wait.h>
 
 # include "ft_printf.h"
-# include "libft.h"
+# include "colors.h"
+
 ////////////////////////////////////////////////////////////
 // # 	GET NEXT LINE									///
 # define BUFFER_SIZE 32
@@ -68,7 +71,7 @@ int			max_all(int how_many, ...);
 void		*expand(void *ptr, int size, int add);
 char		**expand_tab(char **tab, char *new_line);
 void		free_tab(char **tab);
-void		free_s(void **ptr);
+void		*free_s(void *ptr);
 //
 int			find_str(char *str, char *str_pattern);
 int			same_str(char *str, char *str_pattern);

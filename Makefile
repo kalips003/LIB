@@ -1,21 +1,48 @@
-NAME = pipex
-NAME_BONUS = tester
+NAME = push_swap
+NAME_BONUS = checker
 
 CC = cc
-# FLAGS = -Wextra -Wall -Werror -g -fPIE
-FLAGS = -g -fPIE
+FLAGS = -Wextra -Wall -Werror -g -fPIE
+# FLAGS = -g -fPIE
 
 all: $(NAME)
 
-a: $(NAME)
-	./pipex infile "ls -la" "wc -l" outfile
-	@echo outfile =
-	@cat outfile
+# ╭──────────────────────────────────────────────────────────────────────╮
+# │                  	 	        TESTING                    	         │
+# ╰──────────────────────────────────────────────────────────────────────╯
 
-b: $(NAME)
-	rm traces/trace*
-	strace -e dup2,dup,openat,clone,read,write,access,close,execve,pipe,pipe2 -tt -ff -o traces/trace ./pipex infile 'ls -la' 'wc -l' /dev/stdout
-	strace-log-merge traces/trace | bat -lstrace
+ARGS = "1 2 3 9 8 7"
+ARGS2 = 1 6 5 7 9 4 8 33
+
+a: $(NAME)
+	@$(call print_cat_test, $(COLOR_5R_0G_5B), $(COLOR_5R_2G_3B), "にゃ~", "~ teshing $@!~");
+	./$(NAME) $(ARGS)
+
+b: $(NAME_BONUS)
+	@echo > outfile
+	@$(call print_cat_random, # $(COLOR_5R_3G_1B), # $(COLOR_5R_2G_3B), # $(COLOR_0R_2G_3B), "~ teshing $@! ~");
+	./$(NAME_BONUS) $(ARGS2)
+
+
+test2:	libft $(OBJ)
+	@$(CC) $(OBJ) ./lib/test.c -I$(HEADER_FOLDER) ./lib/libft.a -o ./lib/a.out
+	@$(call print_cat, $(CLEAR), $(COLOR_1R_2G_5B), $(COLOR_5R_1G_1B), $(COLOR_3R_2G_5B), $(call pad_word, 10, "Making"), $(call pad_word, 12, "Science"));
+	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s --trace-children=yes --track-fds=yes \
+	./lib/a.out $(ARGS)
+
+test3:	libft $(OBJ)
+	@$(CC) $(OBJ) ./lib/test.c -I$(HEADER_FOLDER) ./lib/libft.a -o ./lib/a.out
+	@$(call print_cat, $(CLEAR), $(COLOR_1R_2G_5B), $(COLOR_5R_1G_1B), $(COLOR_3R_2G_5B), $(call pad_word, 10, "Making"), $(call pad_word, 12, "Science"));
+	./lib/a.out $(ARGS)
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - VALGRIND -
+v: $(NAME) $(NAME_BONUS)
+	@clear
+	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s --trace-children=yes --track-fds=yes \
+	./$(NAME_BONUS) $(ARGS)
+
+# lldb: clean all
+# 	@lldb ./$(NAME) $(ARGS)
 
 # ╭──────────────────────────────────────────────────────────────────────╮
 # │                  	 	        SOURCES                    	         │
@@ -53,13 +80,15 @@ libtest:
 # │                  	 	       PROJECT                   	         │
 # ╰──────────────────────────────────────────────────────────────────────╯
 
-$(NAME): libft $(OBJ)
-	@cc $(FLAGS) $(OBJ) main.c -I$(HEADER_FOLDER) lib/libft.a -o $(NAME)
-	@if [ -f $(NAME) ]; then \
-		$(call print_cat, $(CLEAR), $(GOLD), $(GREEN1), $(GREEN1), $(call pad_word, 10, $(NAME)), $(call pad_word, 12, "Compiled~")); \
-	else \
+$(NAME): libft main.c $(OBJ)
+	@if ! $(CC) $(FLAGS) $(OBJ) main.c -I$(HEADER_FOLDER) lib/libft.a -o $(NAME); then \
 		$(call print_cat, "", $(GOLD), $(RED), $(RED), $(call pad_word, 10, "Problem⠀while"), $(call pad_word, 12, "Compiling..")); \
+		exit 1; \
 	fi
+	@if [ ! -e in ]; then\
+		echo > in;\
+	fi
+	$(call print_cat, $(CLEAR), $(GOLD), $(GREEN1), $(GOLD), $(call pad_word, 10, $(NAME)), $(call pad_word, 12, "Compiled~")); \
 
 src/obj/%.o: src/%.c
 	@if [ ! -e $(OBJ_FOLDER) ]; then\
@@ -74,54 +103,47 @@ src/obj/%.o: src/%.c
 # │                  	 	       BONUS	                   	         │
 # ╰──────────────────────────────────────────────────────────────────────╯
 
-bonus: libft $(OBJ)
-	@cc $(FLAGS) $(OBJ) main_bonus.c -I$(HEADER_FOLDER) lib/libft.a -o $(NAME_BONUS)
-	@if [ -f $(NAME_BONUS) ]; then\
-		$(call print_cat, $(CLEAR), $(GOLD), $(GREEN), $(GREEN), $(call pad_word, 10, $(NAME_BONUS)), $(call pad_word, 12, "Compiled~"));\
+$(NAME_BONUS): libft main_bonus.c $(OBJ)
+	@if ! $(CC) $(FLAGS) $(OBJ) main_bonus.c -I$(HEADER_FOLDER) lib/libft.a -o $(NAME_BONUS); then \
+		$(call print_cat, "", $(GOLD), $(RED), $(RED), $(call pad_word, 10, "Problem⠀while"), $(call pad_word, 12, "Compiling..")); \
+		exit 1; \
 	fi
+	@$(call print_cat, $(CLEAR), $(COLOR_5R_1G_5B), $(COLOR_1R_2G_4B), $(COLOR_5R_1G_0B), $(call pad_word, 10, $(NAME_BONUS)), $(call pad_word, 14, "All⠀ready~"));
+
+bonus: $(NAME_BONUS)
 
 # ╭──────────────────────────────────────────────────────────────────────╮
 # │                  	 	       OTHERS	                   	         │
 # ╰──────────────────────────────────────────────────────────────────────╯
 
 test:	libft
-	@cc ./lib/test.c ./lib/libft.a -o ./lib/a.out
-	$(call print_cat, $(CLEAR), $(COLOR_1R_0G_5B), $(COLOR_5R_1G_0B), $(COLOR_0R_2G_5B), $(call pad_word, 10, "Making"), $(call pad_word, 12, "Science"));
-	@lib/a.out
+	@$(CC) ./lib/test.c ./lib/libft.a -o ./lib/a.out
+	@$(call print_cat, $(CLEAR), $(COLOR_1R_0G_5B), $(COLOR_5R_1G_0B), $(COLOR_0R_2G_5B), $(call pad_word, 10, "Making"), $(call pad_word, 12, "Science"));
+	@lib/a.out $(ARGS2)
 
 vtest:	libft
-	@cc -g3 ./lib/test.c ./lib/libft.a -o ./lib/a.out
-	$(call print_cat, $(CLEAR), $(RED), $(GOLD), $(BLUE1), $(call pad_word, 10, "TESTING"), $(call pad_word, 12, "SCIENCE"));
-	@valgrind lib/a.out
+	@$(CC) -g3 ./lib/test.c ./lib/libft.a -o ./lib/a.out
+	@$(call print_cat, $(CLEAR), $(RED), $(GOLD), $(BLUE1), $(call pad_word, 10, "TESTING"), $(call pad_word, 12, "SCIENCE"));
+	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s --trace-children=yes --track-fds=yes \
+	./lib/a.out $(ARGS)
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - CLEANUP -
 clean:
-	@rm -rf $(OBJ_FOLDER)
-	$(call print_cat, $(CLEAR), $(COLOR_2R_2G_5B), $(COLOR_3R_2G_0B), $(COLOR_4R_5G_0B), $(call pad_word, 10, "Objects"), $(call pad_word, 12, "Exterminated"));
+	@rm -rf $(OBJ_FOLDER) outfile
+	@$(call print_cat, $(CLEAR), $(COLOR_2R_2G_5B), $(COLOR_3R_2G_0B), $(COLOR_4R_5G_0B), $(call pad_word, 10, "Objects"), $(call pad_word, 12, "Exterminated"));
 
 fclean: clean
-	@rm -rf $(NAME) $(NAME_BONUS)
-	@make -sC lib clean_silent;
-	$(call print_cat, $(CLEAR), $(COLOR_1R_2G_0B), $(COLOR_3R_0G_0B), $(COLOR_2R_1G_0B), $(call pad_word, 10, "All⠀clean"), $(call pad_word, 12, "Miaster"));
+	@rm -f $(NAME) $(NAME_BONUS) in
+	@make -sC lib clean_silent
+	@rm -rf traces
+	@$(call print_cat, $(CLEAR), $(COLOR_1R_2G_0B), $(COLOR_3R_0G_0B), $(COLOR_2R_1G_0B), $(call pad_word, 10, "All⠀clean"), $(call pad_word, 12, "Miaster"));
 
 re: fclean all bonus
 
-re_bonus: fclean bonus
-
+# .PHONY target is typically used to declare targets that are not actual files but rather are just actions to be performed by make, like clean or all.
 .PHONY: all clean fclean re bonus
 
 .SILENT: $(NAME) bonus
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - VALGRIND -
-#
-# ARGS = infile "ls -la" "wc -l" outfile
-#
-# valgrind: clean all
-# 	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s \
-# 	--track-origins=yes --trace-children=yes --track-fds=yes --track-origins=yes \
-# 	./$(NAME) $(ARGS)
-
-# lldb: clean all
-# 	@lldb ./$(NAME) $(ARGS)
 
 # ╭──────────────────────────────────────────────────────────────────────╮
 # │                  	 	       PRINT                     	         │
@@ -168,6 +190,7 @@ define print_cat
 	\t\t\t\t\t\t\t	⠀⠀⠀⠀⠀⠀⠀⠉⠐⠒⠠⠤⠤⠤⠤⠔⠂⠠⠤⠤⠤⠄⠐⠒⠂⠉⠉⠉⠉⠉⠁\n$(RESET)"
 endef
 
+# $(call print_cat_error, $(RED), $(RED_L));
 define print_cat_error
 	echo "$(2)\
 	\tにゃ~$(1)\t⠀╱|、\n\
@@ -176,6 +199,41 @@ define print_cat_error
 	\t\t⠀じしˍ)ノ\n$(RESET)"
 endef
 
+# $(call print_cat_test, $(COLOR_5R_3G_1B), $(COLOR_0R_2G_3B), $@, "~ teshing $@! ~");
+define print_cat_test
+	echo "$(CLEAR) $(2)\
+	\t$(3)$(1)\t⠀╱|、\n\
+	\t\t(˚ˎ。7⠀⠀⠀$(2)$(4)$(1)\n\
+	\t\t⠀|、˜\\\\\n\
+	\t\t⠀じしˍ)ノ\n$(RESET)"
+endef
+
+# $(call print_cat_random, # $(random_color), # $(random_color), # $(random_color), "~ teshing $@! ~");
+define print_cat_random
+	echo "$(CLEAR) $(2)\
+	\tにゃ~$(1)\t⠀╱|、\n\
+	\t\t(˚ˎ。7⠀⠀⠀$(3)$(4)$(1)\n\
+	\t\t⠀|、˜\\\\\n\
+	\t\t⠀じしˍ)ノ\n$(RESET)"
+endef
+
+# //////////////////////////////////////
+# @echo "Random color escape sequence: $(call random_color_escape)"
+# Define a function to generate a random color code
+define random_colora
+	\033[38;5;$(shell echo $$((RANDOM % 256)))m
+endef
+
+random_number := $(shell od -An -N1 -tu1 /dev/urandom)
+
+define random_number_func
+	$(random_number)
+endef
+
+random_number:
+	@echo $(random_number)
+
+# //////////////////////////////////////
 # 					Define all 256 colors
 BLACK = \033[38;5;0m
 RED = \033[38;5;1m

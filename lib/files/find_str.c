@@ -38,7 +38,8 @@ int	find_str(char *str, char *str_pattern)
 }
 
 //////////////////////////////////////////////////////
-//  #   FIND SUBSTRING, RETURN POSI, -1 IF NOT FOUND
+//  #   FIND EXACT STRING return 1
+// return 0 if not
 int	same_str(char *str, char *str_pattern)
 {
 	int	lenght;
@@ -47,6 +48,6 @@ int	same_str(char *str, char *str_pattern)
 	lenght = len(str);
 	lenght2 = len(str_pattern);
 	if (lenght == lenght2 && !find_str(str, str_pattern))
-		return (0);
-	return (-1);
+		return (1);
+	return (0);
 }

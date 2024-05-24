@@ -63,9 +63,9 @@ void	free_tab(char **tab)
 	free(tab);
 }
 
-void	free_s(void **ptr)
+void	*free_s(void *ptr)
 {
-	if (*ptr)
-		free(*ptr);
-	*ptr = NULL;
+	if (ptr)
+		free(ptr);
+	return (NULL);
 }
