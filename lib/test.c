@@ -1,91 +1,41 @@
 // cc test.c -L. -l:libft.a && ./a.out
 // cls && cc test.c -L. -l:./push_swap/lib/libft.a && ./a.out
 #include "../include/libft.h"
-#include "../include/push_swap.h"
+#include "../include/so_long.h"
+
+///////////////////////////////////////////////////////////////////////////////]
+/* * * * * * * * * * * * * * * * * * * * * * * * * * *
+░█████╗░  ███████╗░█████╗░██╗██████╗░███████╗
+██╔══██╗  ██╔════╝██╔══██╗██║██╔══██╗██╔════╝
+███████║  █████╗░░███████║██║██████╔╝█████╗░░
+██╔══██║  ██╔══╝░░██╔══██║██║██╔══██╗██╔══╝░░
+██║░░██║  ██║░░░░░██║░░██║██║██║░░██║███████╗
+╚═╝░░╚═╝  ╚═╝░░░░░╚═╝░░╚═╝╚═╝╚═╝░░╚═╝╚══════╝
+
+
+animation exit, closed if not all collec
+tweak anim time
+
+
+
+
+lib > comment line of norm size
+* * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 //, void (*del)(void *),
 // int my_function(int num, ...);
 // #define funct(ap, type)    (*(type *)((ap += sizeof(type)) - sizeof(type)))
 
-void print_data(t_stacks *stacks)
-{
-	int i = -1;
-	t_entry *temp = stacks->top_a;
-	while (++i < stacks->full_size)
-	{
-        if (i == stacks->size_a)
-            temp = stacks->top_b;
-		// put("num: %d. target %d. hunter: %d\n", temp->num_index, temp->target->num_index, temp->hunter->num_index);
-		put("num: %d. dist: %d. dist_p %d. dist_n: %d\n", temp->num, temp->dist, temp->dist_p, temp->dist_n);
-		temp = temp->below;
-	}
-}
-
-void    give_position_a(t_stacks *s)
-{
-    int i;
-    t_entry *temp;
-
-    i = -1;
-    temp = s->top_a;
-    while (++i < s->size_a)
-    {
-		temp->pile = 'A';
-		temp->size_s = s->size_a;
-		temp->position = i;
-		temp->dist_p = i;
-		temp->dist_n = -(s->size_a - i);
-		temp->dist = min(abs(temp->dist_n), temp->dist_p) * (1 - 2 * (abs(temp->dist_n) < temp->dist_p));
-		temp = temp->below;
-    }
-}
-
-void    give_position_b(t_stacks *s)
-{
-    int i;
-    t_entry *temp;
-
-    i = -1;
-    temp = s->top_b;
-    while (++i < s->size_b)
-    {
-		temp->pile = 'B';
-		temp->size_s = s->size_b;
-		temp->position = -i -1;
-		temp->dist_p = i;
-		temp->dist_n = -(s->size_b - i);
-		temp->dist = min(abs(temp->dist_n), temp->dist_p) * (1 - 2 * (abs(temp->dist_n) < temp->dist_p));
-		temp = temp->below;
-    }
-}
-
-void refresh_data_all(t_stacks *stacks)
-{
-	int i = -1;
-	t_entry *temp = stacks->top_a;
-	while (++i < stacks->full_size)
-	{
-        if (i == stacks->size_a)
-            temp = stacks->top_b;
-		
-
-
-
-		temp = temp->below;
-	}
-}
-
 int	main(int ac, char **av, char **env)
 {
-    t_stacks    stacks;
-
-    if (ac < 2)
-        return (put(MSG_NONUM));
-    ini_stacks(ac, av, &stacks);
-	give_position_a(&stacks);
-	give_position_b(&stacks);
-	print_data(&stacks);
-	exit_all(&stacks, NULL, 0, NULL);
+	char **tab = NULL;
+	tab = expand_tab(tab, str("hello"));
+	tab = expand_tab(tab, str("you"));
+	tab = expand_tab(tab, str("are"));
+	tab = expand_tab(tab, str("my"));
+	tab = expand_tab(tab, str("%.x", "0123", 1000));
+	put("%t", tab);
+	free_tab(tab);
 	return (0);
 }
 
@@ -201,29 +151,4 @@ If x is initially 10101010 in binary, after performing the above operation,
 	the bits 2 to 4 will be toggled, resulting in 10000010.
 
 
-*/
-
-
-
-/*
-Redirecting standard output to a file:
-	./program > output.txt
-
-Redirecting standard error to a file:
-	./program 2> error.txt
-
-Redirecting both standard output and standard error to a file:
-	./program > output.txt 2>&1
-*/
-
-
-/*
-Common flags used with open():
-
-    O_RDONLY: Open for reading only.
-    O_WRONLY: Open for writing only.
-    O_RDWR: Open for reading and writing.
-    O_APPEND: Open in append mode (writes are added to the end of the file).
-    O_CREAT: Create the file if it does not exist.
-    O_TRUNC: Truncate the file to zero length if it already exists.
 */

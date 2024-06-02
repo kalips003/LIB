@@ -6,7 +6,7 @@
 /*   By: agallon <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 20:06:26 by agallon           #+#    #+#             */
-/*   Updated: 2024/05/13 18:12:36 by agallon          ###   ########.fr       */
+/*   Updated: 2024/06/02 15:44:42 by agallon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,11 @@
 # include <string.h>
 # include <unistd.h>
 # include <sys/stat.h>
-// # include <sys/wait.h>
+# include <sys/wait.h>
+# include <time.h>
 
 # include "ft_printf.h"
-# include "colors.h"
-
+# include "libft.h"
 ////////////////////////////////////////////////////////////
 // # 	GET NEXT LINE									///
 # define BUFFER_SIZE 32
@@ -62,7 +62,7 @@ int			ft_atoi(char *str, int *error);
 char		*ft_memset(void *s, char c, int size);
 void		*mem(char c, int size);
 //
-int			abs(int num);
+// int			abs(int num);
 int			min(int a, int b);
 int			max(int a, int b);
 int			min_all(int how_many, ...);
@@ -70,7 +70,7 @@ int			max_all(int how_many, ...);
 //
 void		*expand(void *ptr, int size, int add);
 char		**expand_tab(char **tab, char *new_line);
-void		free_tab(char **tab);
+void		*free_tab(char **tab);
 void		*free_s(void *ptr);
 //
 int			find_str(char *str, char *str_pattern);

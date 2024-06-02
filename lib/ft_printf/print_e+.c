@@ -57,7 +57,7 @@ int	ft_string_hexa(va_list args, t_flags *f)
 		else
 			f->size += put("%d", str[i]);
 		f->size += put("%.*s", ((str[i] == ' ' || str[i] == '\n') && !f->hash)
-				|| f->space, " ");
+				|| f->space, " ") - 4;
 	}
 	put(RESET);
 	return (f->size);

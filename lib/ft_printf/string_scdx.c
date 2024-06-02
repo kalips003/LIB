@@ -14,7 +14,6 @@
 
 //////////////////////////////////////////////////////////// (%s)
 //	flag [width][.] !width must be = 1;
-//	%<how many time>.<truncate string>s
 char	*pt_string(va_list args, t_flags *f)
 {
 	char	*str_arg;
