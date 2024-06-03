@@ -6,7 +6,7 @@
 /*   By: agallon <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/08 16:35:59 by agallon           #+#    #+#             */
-/*   Updated: 2024/05/13 18:58:56 by agallon          ###   ########.fr       */
+/*   Updated: 2024/06/03 16:47:29 by agallon          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int	ft_string_hexa(va_list args, t_flags *f)
 		else
 			f->size += put("%d", str[i]);
 		f->size += put("%.*s", ((str[i] == ' ' || str[i] == '\n') && !f->hash)
-				|| f->space, " ") - 4;
+				|| f->space, " ");
 	}
 	put(RESET);
 	return (f->size);

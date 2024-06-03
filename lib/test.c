@@ -28,15 +28,11 @@ lib > comment line of norm size
 
 int	main(int ac, char **av, char **env)
 {
-	char **tab = NULL;
-	tab = expand_tab(tab, str("hello"));
-	tab = expand_tab(tab, str("you"));
-	tab = expand_tab(tab, str("are"));
-	tab = expand_tab(tab, str("my"));
-	tab = expand_tab(tab, str("%.x", "0123", 1000));
-	put("%t", tab);
-	free_tab(tab);
-	return (0);
+    char *string = str("heello\n");
+
+    put("= %#S =\n", string);
+    free_s(string);
+    return 0;
 }
 
 // while (((condition1) & bit) || ((condition2) & ~bit))
