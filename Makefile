@@ -1,41 +1,104 @@
 NAME = pipex
-NAME_BONUS = tester
+NAME_BONUS = pipex_bonus
 
 CC = cc
 # FLAGS = -Wextra -Wall -Werror -g -fPIE
-FLAGS = -g -fPIE
+FLAGS = -Wall -Werror -Wextra -g -fPIE -I$(HEADER_FOLDER) -lm
 
 all: $(NAME)
 
-a: $(NAME)
-	./pipex infile "ls -la" "wc -l" outfile
-	@echo outfile =
-	@cat outfile
-
-b: $(NAME)
-	rm traces/trace*
-	strace -e dup2,dup,openat,clone,read,write,access,close,execve,pipe,pipe2 -tt -ff -o traces/trace ./pipex infile 'ls -la' 'wc -l' /dev/stdout
-	strace-log-merge traces/trace | bat -lstrace
-
 # ╭──────────────────────────────────────────────────────────────────────╮
-# │                  	 	        SOURCES                    	         │
+# │                  	 	        TESTING                    	         │
 # ╰──────────────────────────────────────────────────────────────────────╯
 
-SRC_FOLDER = src
-OBJ_FOLDER = src/obj
-HEADER_FOLDER = include
+INFILE = in_file
+OUTFILE = out_file
+OUTFILE_OK = out_file_ok
+HEREDOC = here_doc STOP
 
-# $(patsubst pattern,replacement,text)
-# $(addprefix prefix, list)
-SRC = $(wildcard src/*.c)
-OBJ = $(patsubst src/%.c, src/obj/%.o, $(SRC))
+ARGS1 = "wc -c" "wc -c" "wc -c" "wc -c"
+BASH1 = wc -c | wc -c | wc -c | wc -c
+
+ARGS2 = "ls -la" "ls -la"
+BASH2 = ls -la | ls -la
+
+ARGS3 = "cat" "cat"
+
+files:
+	@rm -f $(INFILE) $(OUTFILE) $(OUTFILE_OK)
+	@rm -f 
+	@touch $(INFILE)
+
+a: libft $(NAME) files
+	$(call mandatory,  $(ARGS1), $(BASH1));
+
+b: libft $(NAME_BONUS) files
+	@$(call random_shmol_cat, teshting ... $@ !, "$(NAME_BONUS):", $(CLS)\n, )
+	./$(NAME_BONUS) here_doc END $(ARGS3) $(OUTFILE)
+	@echo "\n\tOutfile content:"
+	@cat $(OUTFILE)
+
+d:
+	cat << END | cat >> out_file_ok
+
+v: libft $(NAME) files
+	$(call mandatory_valgrind,  $(ARGS1), $(BASH1));
+
+# ---------------------
+maieul: $(NAME) $(NAME_BONUS)
+	@$(call print_cat_test, $(COLOR_5R_3G_1B), $(COLOR_0R_2G_3B), "にゃ~", "~ teshing $@! ~");
+	@if [ ! -e traces ]; then\
+		mkdir -p traces;\
+	fi
+	@rm -f traces/trace*
+	strace -e dup2,dup,openat,clone,read,write,access,close,execve,pipe,pipe2 -tt -ff -o traces/trace \
+	./pipex in 'ls -la' 'wc -l' /dev/stdout
+	strace-log-merge traces/trace | batcat -lstrace
+
+# $(ARGS2) $(BASH2)
+# -------------------------------------------------> PIPEX
+define mandatory
+	@clear
+	@$(call random_shmol_cat, teshting ... $@ !, "$(NAME):", , )
+	./$(NAME) $(INFILE) $(1) $(OUTFILE)
+	@echo "\n\tOutfile content:"
+	@cat $(OUTFILE)
+	@$(call random_shmol_cat, teshting: $(1) !, outputs should be identical:, , )
+	< $(INFILE) $(2) > $(OUTFILE_OK)
+	@echo "\n\tOutfile control content:"
+	@cat $(OUTFILE_OK)
+endef
+
+define mandatory_valgrind
+	@clear
+	@$(call random_shmol_cat, teshting ... $@ !, "$(NAME):", , )
+	-$(VALGRIND) ./$(NAME) $(INFILE) $(1) $(OUTFILE)
+	@echo "\n\tOutfile content:"
+	@cat $(OUTFILE)
+	@$(call random_shmol_cat, teshting: $(1) !, outputs should be identical:, , )
+	< $(INFILE) $(2) > $(OUTFILE_OK)
+	@echo "\n\tOutfile control content:"
+	@cat $(OUTFILE_OK)
+endef
+
+# ------------------------------------------
+# # map=$$($(eval echo $$arg));
+# m: libft mlx $(NAME)
+# 	@for map in $(BAD_MAPS); do \
+# 	$(call random_shmol_cat, teshting lots of bad miaps:, $$map shouldt run..., $(CLS), ); \
+# 	$(VALGRIND) ./$(NAME) map/map_bad/$$map; \
+# 	echo "\t\033[5m~ Press Enter to continue...\033[0m"; \
+# 	read -p "" key; \
+# 	done
+# #
+# 	@$(call random_shmol_cat, "\'tis good map Mandatory", "try n break it.. にゃ?", $(CLS), );
+# 	@echo "\t\033[5m~ Press Enter to continue...\033[0m"
+# 	@read -p "" key
+# 	-$(VALGRIND) ./$(NAME) map/$(MAP3)
 
 # ╭──────────────────────────────────────────────────────────────────────╮
 # │                  	 	        Libft                      	         │
 # ╰──────────────────────────────────────────────────────────────────────╯
-
-# -s: silent
-# -C: change folder before make
 
 libft:
 	@make -sC lib all;
@@ -53,20 +116,28 @@ libtest:
 # │                  	 	       PROJECT                   	         │
 # ╰──────────────────────────────────────────────────────────────────────╯
 
-$(NAME): libft $(OBJ)
-	@cc $(FLAGS) $(OBJ) main.c -I$(HEADER_FOLDER) lib/libft.a -o $(NAME)
-	@if [ -f $(NAME) ]; then \
-		$(call print_cat, $(CLEAR), $(GOLD), $(GREEN1), $(GREEN1), $(call pad_word, 10, $(NAME)), $(call pad_word, 12, "Compiled~")); \
-	else \
-		$(call print_cat, "", $(GOLD), $(RED), $(RED), $(call pad_word, 10, "Problem⠀while"), $(call pad_word, 12, "Compiling..")); \
+SRC = $(wildcard src/*.c)
+OBJ = $(patsubst src/%.c, src/obj/%.o, $(SRC))
+
+HEADER_FOLDER = include
+SRC_FOLDER = src
+OBJ_FOLDER = src/obj
+
+$(NAME): libft $(OBJ) main.c
+	@clear
+	@if ! $(CC) $(FLAGS) $(OBJ) main.c lib/libft.a -o $(NAME); then \
+		$(call print_cat, "", $(RED), $(GOLD), $(RED_L), $(call pad_word, 10, "ERROR"), $(call pad_word, 12, "COMPILING..")); \
+		exit 1; \
 	fi
+	$(call print_cat, $(CLEAR), $(GOLD), $(GREEN1), $(GREEN1), $(call pad_word, 10, $(NAME)), $(call pad_word, 12, "Compiled~"));
+
 
 src/obj/%.o: src/%.c
 	@if [ ! -e $(OBJ_FOLDER) ]; then\
 		mkdir -p $(OBJ_FOLDER);\
 	fi
-	@if ! $(CC) -c $(FLAGS) -I$(HEADER_FOLDER) $< -o $@; then \
-		$(call print_cat_error, $(RED), $(RED_L)); \
+	@if ! $(CC) -c $(FLAGS) $< -o $@; then \
+		$(call shmol_cat_error, $(RED), $(RED_L)); \
 		exit 1; \
 	fi
 
@@ -74,28 +145,60 @@ src/obj/%.o: src/%.c
 # │                  	 	       BONUS	                   	         │
 # ╰──────────────────────────────────────────────────────────────────────╯
 
-bonus: libft $(OBJ)
-	@cc $(FLAGS) $(OBJ) main_bonus.c -I$(HEADER_FOLDER) lib/libft.a -o $(NAME_BONUS)
-	@if [ -f $(NAME_BONUS) ]; then\
-		$(call print_cat, $(CLEAR), $(GOLD), $(GREEN), $(GREEN), $(call pad_word, 10, $(NAME_BONUS)), $(call pad_word, 12, "Compiled~"));\
+SRC_B = $(wildcard src_bonus/*.c)
+OBJ_B = $(patsubst src_bonus/%.c, src_bonus/obj/%.o, $(SRC_B))
+
+OBJ_FOLDER_B = src_bonus/obj
+
+$(NAME_BONUS): bonus
+
+bonus: libft $(OBJ) main_bonus.c
+	@clear
+	@if ! $(CC) $(FLAGS) $(OBJ) main_bonus.c lib/libft.a -o $(NAME_BONUS); then \
+		$(call print_cat, "", $(RED), $(GOLD), $(RED_L), $(call pad_word, 10, "ERROR"), $(call pad_word, 12, "COMPILING..")); \
+		exit 1; \
 	fi
+	$(call print_cat, $(CLEAR), $(GOLD), $(GREEN1), $(COLOR_4R_1G_5B), $(call pad_word, 10, $(NAME_BONUS)), $(call pad_word, 12, "Compiled~"));
+
+
+# src_bonus/obj/%.o: src_bonus/%.c
+# 	@clear
+# 	@if [ ! -e $(OBJ_FOLDER) ]; then\
+# 		mkdir -p $(OBJ_FOLDER);\
+# 	fi
+# 	@if ! $(CC) -c $(FLAGS) -I$(HEADER_FOLDER) -Imlx_linux -O3 -c $< -o $@; then \
+# 		$(call shmol_cat_error, $(RED), $(RED_L)); \
+# 		exit 1; \
+# 	fi
 
 # ╭──────────────────────────────────────────────────────────────────────╮
 # │                  	 	       OTHERS	                   	         │
 # ╰──────────────────────────────────────────────────────────────────────╯
 
 test:	libft
-	@cc ./lib/test.c ./lib/libft.a -o ./lib/a.out
-	$(call print_cat, $(CLEAR), $(COLOR_1R_0G_5B), $(COLOR_5R_1G_0B), $(COLOR_0R_2G_5B), $(call pad_word, 10, "Making"), $(call pad_word, 12, "Science"));
+	@rm -f ./lib/a.out
+	-@cc ./lib/test.c ./lib/libft.a -o ./lib/a.out -lm
+	@if [ ! -e ./lib/a.out ]; then\
+		$(call print_cat, "", $(RED), $(GOLD), $(RED_L), $(call pad_word, 10, "The⠀Cake"), $(call pad_word, 12, "Is⠀A⠀Lie..")); \
+		exit 3; \
+	fi
+	@$(call random_cat, $(call pad_word, 12, "Making"), $(call pad_word, 14, "Science"), $(CLS), $(RESET));
 	@lib/a.out
 
-vtest:	libft
-	@cc -g3 ./lib/test.c ./lib/libft.a -o ./lib/a.out
-	$(call print_cat, $(CLEAR), $(RED), $(GOLD), $(BLUE1), $(call pad_word, 10, "TESTING"), $(call pad_word, 12, "SCIENCE"));
-	@valgrind lib/a.out
+test2:	mlx libft $(OBJ) include/so_long.h
+	@rm -f ./lib/a.out
+	@cc ./lib/test.c $(OBJ) -I$(HEADER_FOLDER) lib/libft.a -lm -o ./lib/a.out
+	@$(call random_cat, $(call pad_word, 12, "TESTING"), $(call pad_word, 14, "SCIENCE"), $(CLS), $(RESET));
+	-@$(VALGRIND) lib/a.out
 
+vtest:	libft
+	@cc -g3 ./lib/test.c ./lib/libft.a -o ./lib/a.out -lm
+	$(call print_cat, "", $(RED), $(GOLD), $(BLUE1), $(call pad_word, 10, "TESTING"), $(call pad_word, 12, "SCIENCE.."));
+	@$(VALGRIND) lib/a.out
+
+# 
 clean:
-	@rm -rf $(OBJ_FOLDER)
+	@rm -rf $(OBJ_FOLDER) $(INFILE) $(OUTFILE) $(OUTFILE_OK)
 	$(call print_cat, $(CLEAR), $(COLOR_2R_2G_5B), $(COLOR_3R_2G_0B), $(COLOR_4R_5G_0B), $(call pad_word, 10, "Objects"), $(call pad_word, 12, "Exterminated"));
 
 fclean: clean
@@ -103,7 +206,7 @@ fclean: clean
 	@make -sC lib clean_silent;
 	$(call print_cat, $(CLEAR), $(COLOR_1R_2G_0B), $(COLOR_3R_0G_0B), $(COLOR_2R_1G_0B), $(call pad_word, 10, "All⠀clean"), $(call pad_word, 12, "Miaster"));
 
-re: fclean all
+re: fclean all bonus
 
 re_bonus: fclean
 
@@ -111,28 +214,37 @@ re_bonus: fclean
 
 .SILENT: $(NAME) bonus
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - VALGRIND -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - -  - -  - VALGRIND
+# VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s --track-fds=yes
+VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s --trace-children=yes --track-fds=yes
 #
-# ARGS = infile "ls -la" "wc -l" outfile
-#
-# valgrind: clean all
-# 	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s \
-# 	--track-origins=yes --trace-children=yes --track-fds=yes --track-origins=yes \
-# 	./$(NAME) $(ARGS)
-
 # lldb: clean all
 # 	@lldb ./$(NAME) $(ARGS)
+#
+# ↑さ↓ぎょう  を  ↓ほ↑ぞん
+# 																	GITHUB
+git: fclean
+	@$(call random_shmol_cat_blink, 作業を保存してるかな.., いいね、いいねえー , $(CLS), );
+	@current_date=$$(date); \
+	git add .; \
+	git commit -m "$$current_date"; \
+	git push
 
+NORM_FILE = src/
+
+norm: fclean
+	@$(call random_shmol_cat_blink, 掃除してるかな..、いいね、いいねえー, giv file to norm, $(CLS), );
+	-@read -p 'file...:' path; \
+	if [ -z "$$path" ]; then \
+		watch norminette $(NORM_FILE); \
+	else \
+		watch norminette $$path; \
+	fi
+
+#
 # ╭──────────────────────────────────────────────────────────────────────╮
 # │                  	 	       PRINT                     	         │
 # ╰──────────────────────────────────────────────────────────────────────╯
-
-# U+2800 to U+28FF Braile
-# <Esc>[38;5;ColorNumberm
-
-CLEAR = \033[2J\033[H
-RESET = \033[0m
-BLINK = \033[5m
 
 # COLOR_2R_1G_3B
 PURPLE = \033[38;5;97m
@@ -143,13 +255,23 @@ GREEN1 = \033[38;5;40m
 # COLOR_0R_4G_5B
 BLUE1 = \033[38;5;45m
 
-test_color:
-	$(call print_cat, $(CLEAR), $(RED), $(RED1), $(RED_L), $(call pad_word, 12, "The⠀Cake"), $(call pad_word, 12, "Is⠀A⠀Lie..."));
+# $(COLOR_1R_0G_5B), $(COLOR_5R_1G_0B), $(COLOR_0R_2G_5B)
+# $(RED), $(GOLD), $(BLUE1)
 
+test_color666:
+	@$(call random_cat, $(call pad_word, 12, The⠀Cake), $(call pad_word, 14, Is⠀A⠀Lie⠀...), $(CLS), $(RESET));
+	@$(call random_cat, $(call pad_word, 13, The⠀Cake), $(call pad_word, 15, Is⠀A⠀Lie⠀...), , $(RESET));
+
+
+# $(call pad_word, 12, The⠀Cake)
 pad_word = $(BLINK)$(shell printf "%$(1)s" "$(2)")$(RESET)
+# improve with: STRING1=$$(printf "\033[38;5;%dm" $$(shuf -i 0-255 -n 1));
+
+# --------------------------------------------------------------------------------- >
+# @$(call print_cat, $(CLEAR), $(body), $(eye), $(txt), $(call pad_word, 12, "The⠀Cake"), $(call pad_word, 12, "Is⠀A⠀Lie..."));
 # print_cat (resest?)(color_cat)(color_eyes)(color_text)($(padded_txt_top))($(padded_txt_bot))
 define print_cat
-    echo "$(1)$(2)\
+    @echo "$(1)$(2)\
 	\t\t\t\t\t\t\t	⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⠒⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n\
 	\t\t\t\t\t\t\t	⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠇⠀⠘⡄⠀⠀⠀⠀⠀⠀⣀⠀⠀\n\
 	\t\t\t\t\t\t\t	⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡜⠀⠀⠀⠁⠉⠉⠉⠒⠊⠉⠀⡇⠀\n\
@@ -168,7 +290,86 @@ define print_cat
 	\t\t\t\t\t\t\t	⠀⠀⠀⠀⠀⠀⠀⠉⠐⠒⠠⠤⠤⠤⠤⠔⠂⠠⠤⠤⠤⠄⠐⠒⠂⠉⠉⠉⠉⠉⠁\n$(RESET)"
 endef
 
-define print_cat_error
+# --------------------------------------------------------------------------------- >
+# @$(call random_cat, $(call pad_word, 12, txt1), $(call pad_word, 12, txt2), $(CLS), $(RESET));
+# print_cat (resest?)(color_cat)(color_eyes)(color_text)($(padded_txt_top))($(padded_txt_bot))
+define random_cat
+	COLOR=$$(printf "\033[38;5;%dm" $$(shuf -i 0-255 -n 1)); \
+	COLOR2=$$(printf "\033[38;5;%dm" $$(shuf -i 0-255 -n 1)); \
+	COLOR3=$$(printf "\033[38;5;%dm" $$(shuf -i 0-255 -n 1)); \
+    echo "$(3)$${COLOR}\
+	\t\t\t\t\t\t\t	⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⠒⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n\
+	\t\t\t\t\t\t\t	⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠇⠀⠘⡄⠀⠀⠀⠀⠀⠀⣀⠀⠀\n\
+	\t\t\t\t\t\t\t	⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡜⠀⠀⠀⠁⠉⠉⠉⠒⠊⠉⠀⡇⠀\n\
+	\t\t\t\t\t\t\t	⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡜⠀$${COLOR2}$(BLINK)⣀⡀$(RESET)$${COLOR}⠀⠀⠀⠀⠀⠀⠀⠀⢰⠁⠀\n\
+	\t\t\t\t\t\t\t	⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠲⢴⠁⠀$${COLOR2}$(BLINK)⠛⠁$(RESET)$${COLOR}$${COLOR2}$(BLINK)⠀⠀⢀⣄$(RESET)$${COLOR}⠀⠀⠀⠀⢸⠀⠀\n\
+	\t\t\t\t\t\t\t	⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠑⠺⡀⠀⠀⢶⠤$${COLOR2}$(BLINK)⠀⠈⠋$(RESET)$${COLOR}⠀⠀⠀⠀⡘⠀⠀\n\
+	\t\t\t\t\t\t\t	⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠑⢄⡀⠀⠀⠀⠠⣉⠑⠂⠀⢠⠃⠀⠀\n\
+	\t\t\t\t\t\t\t	⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⠊⠀⠀⠀⠀⠀⠀⠁⠀⠀⠈⢆⠀⠀\n\
+	\t\t\t\t\t\t\t	⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⡆⠀\n\
+	\t\t\t\t\t\t\t	⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠤⠒⠒⠃⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⠀\n\
+	\t\t\t\t\t\t\t	⠀⠔⠑⠄⠀⠀⠀⠀⠀⠀⠀⠀⡎⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇\n\
+	\t\t\t\t\t\t\t	⠸⡀⠀⢣⠀⠀⠀⠀⠀⠀⠀⠀⡇$${COLOR3}$(1)$${COLOR}⠀⠀⠀⠀⠀⡇\n\
+	\t\t\t\t\t\t\t	⠀⠱⡀⠀⠳⡀⠀⠀⠀⠀⠀⠀⢃$${COLOR3}$(2)$${COLOR}⠀⠀⡸⠀\n\
+	\t\t\t\t\t\t\t	⠀⠀⠑⢄⠀⠈⠒⢄⡀⠀⠀⠀⠸⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡰⠁⠀\n\
+	\t\t\t\t\t\t\t	⠀⠀⠀⠀⠑⠦⣀⠀⠈⠉⠐⠒⠒⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⢢⠀\n\
+	\t\t\t\t\t\t\t	⠀⠀⠀⠀⠀⠀⠀⠉⠐⠒⠠⠤⠤⠤⠤⠔⠂⠠⠤⠤⠤⠄⠐⠒⠂⠉⠉⠉⠉⠉⠁\n$(4)"
+endef
+
+# --------------------------------------------------------------------------------- >
+# @$(call shmol_cat_color, $(color_cat), $(color_txt), text1, txt2, $(CLS), $(RESET));
+define shmol_cat_color
+	echo "$(5)$(2)\
+	\tにゃ~$(1)\t⠀╱|、\n\
+	\t\t(˚ˎ。7⠀⠀⠀$(2)~ $(3) ~$(1)\n\
+	\t\t⠀|、˜\\\\\t\t$(2)$(4)$(1)\n\
+	\t\t⠀じしˍ)ノ\n$(6)"
+endef
+# --------------------------------------------------------------------------------- >
+# @$(call random_shmol_cat, text 1, text 2, $(CLS), $(RESET));
+# $(1)= $(CLEAR); $(2)= text1; $(3)= text2; $(4)= $(RESET)
+define random_shmol_cat
+	COLOR=$$(printf "\033[38;5;%dm" $$(shuf -i 0-255 -n 1)); \
+	COLOR2=$$(printf "\033[38;5;%dm" $$(shuf -i 0-255 -n 1)); \
+	echo "$(3)$${COLOR2}\
+	\tにゃ~$${COLOR}\t⠀╱|、\n\
+	\t\t(˚ˎ。7⠀⠀⠀$${COLOR2}~ $(1) ~$${COLOR}\n\
+	\t\t⠀|、˜\\\\\t\t$${COLOR2}~ $(2)$${COLOR}\n\
+	\t\t⠀じしˍ)ノ\n$(4)"
+endef
+
+# // <!> - - - - - - - - - - - </!>
+# --------------------------------------------------------------------------------- >
+rscs:
+	@$(call random_shmol_cat_surligne, text 1, text 2, $(CLS), $(RESET));
+
+define random_shmol_cat_surligne
+	COLOR=$$(printf "\033[0m\033[38;5;%dm" $$(shuf -i 0-255 -n 1)); \
+	COLOR2=$$(printf "\033[48;5;%dm" $$(shuf -i 0-255 -n 1)); \
+	echo "$(3)$${COLOR2}\
+	\tにゃ~$${COLOR}\t⠀╱|、\n\
+	\t\t(˚ˎ。7⠀⠀⠀$${COLOR2}~ $(1) ~$${COLOR}\n\
+	\t\t⠀|、˜\\\\\t\t$${COLOR2}~ $(2)$${COLOR}\n\
+	\t\t⠀じしˍ)ノ\n$(4)"
+endef
+
+rscb:
+	@$(call random_shmol_cat_blink, text 1, text 2, $(CLS), $(RESET));
+
+define random_shmol_cat_blink
+	COLOR=$$(printf "\033[0m\033[38;5;%dm" $$(shuf -i 0-255 -n 1)); \
+	COLOR2=$$(printf "\e[5m\033[38;5;%dm" $$(shuf -i 0-255 -n 1)); \
+	echo "$(3)\n$${COLOR2}\
+	\tにゃ~$${COLOR}\t⠀╱|、\n\
+	\t\t(˚ˎ。7⠀⠀⠀$${COLOR2}~ $(1) ~$${COLOR}\n\
+	\t\t⠀|、˜\\\\\t\t$${COLOR2}~ $(2)$${COLOR}\n\
+	\t\t⠀じしˍ)ノ\n$(4)"
+endef
+# // <!> - - - - - - - - - - - </!>
+# --------------------------------------------------------------------------------- >
+# @$(call shmol_cat_error, $(RED), $(RED_L));
+# $(1) = $(color_cat), $(2) = $(color_text)	NO CLS
+define shmol_cat_error
 	echo "$(2)\
 	\tにゃ~$(1)\t⠀╱|、\n\
 	\t\t(˚ˎ。7⠀⠀⠀$(2)~ somshin wen wong ~$(1)\n\
@@ -177,6 +378,12 @@ define print_cat_error
 endef
 
 # 					Define all 256 colors
+CLEAR = \033[2J\033[H
+CLS = \e[2J\e[H
+RESET = \033[0m
+BLINK = \033[5m
+# U+2800 to U+28FF Braile
+# <Esc>[38;5;ColorNumberm
 BLACK = \033[38;5;0m
 RED = \033[38;5;1m
 GREEN = \033[38;5;2m

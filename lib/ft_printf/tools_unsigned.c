@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   tools_unsigned.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agallon <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: kalipso <kalipso@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/09 15:50:30 by agallon           #+#    #+#             */
-/*   Updated: 2023/12/09 15:50:33 by agallon          ###   ########.fr       */
+/*   Updated: 2024/06/15 18:18:56 by kalipso          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////]
 //	#
 int	size_format_num_un(unsigned long num, t_flags *f, int num_size)
 {
@@ -30,7 +30,7 @@ int	size_format_num_un(unsigned long num, t_flags *f, int num_size)
 	return (size);
 }
 
-////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////]
 //	#	RETURN THE SIZE OF A NUMBER WITHOUT -
 int	size_num_base_un(unsigned long num, int base)
 {
@@ -45,7 +45,7 @@ int	size_num_base_un(unsigned long num, int base)
 	return (size + 1);
 }
 
-////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////]
 //	#	DOES THE PRINTING OF ARGS FORMAT, RETURN SIZE OF FORMAT
 
 int	f_format_num_un(t_flags *f, unsigned long num, int size_num)
@@ -70,7 +70,7 @@ int	f_format_num_un(t_flags *f, unsigned long num, int size_num)
 	return (i + prefix);
 }
 
-////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////]
 //	#	WRITE NUM IN CORRESPONDING BASE, NO SIGN
 int	ft_putnbr_base_un(int fd, unsigned long nbr, char *base)
 {
@@ -78,9 +78,17 @@ int	ft_putnbr_base_un(int fd, unsigned long nbr, char *base)
 	int			rtrn;
 
 	rtrn = 0;
-	size = ft_strlen(base);
+	size = ft_strlen666(base);
 	if (nbr >= (unsigned long)size)
 		rtrn += ft_putnbr_base(fd, nbr / size, base);
 	write(fd, &base[nbr % size], 1);
 	return (rtrn + 1);
+}
+
+///////////////////////////////////////////////////////////////////////////////]
+void	*free_333(void *ptr)
+{
+	if (ptr)
+		free(ptr);
+	return (NULL);
 }

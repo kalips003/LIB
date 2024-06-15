@@ -13,13 +13,17 @@
 #ifndef COLORS_H
 # define COLORS_H
 
+# define ERR "\033[0;31mError - \e[0m"
+# define ERRM "\033[0;32mError - \e[0m"
+# define ERR1 "\033[0;33mError - \e[0m"
+
 # define CLEAR "\e[2J\e[H"
+# define CLS "\e[2J\e[H"
 # define REVERSE "\e[7m"
 # define BLINK "\e[5m"
 # define R_BLINK "\e[25m"
 
 # define RESET "\e[0m"
-# define CLS "\e[0m"
 # define END "\e[0m\n"
 
 # define BLACK "\033[0;30m"
@@ -291,6 +295,7 @@ COMBINAISONS: BOLD_BLACK "\033[30;1m"
 
 [0] black [1] red [2] green [3] yellow [4] blue [5] magenta [6] cyan [7] white) [8] default
 
+"\033[38;5;{foreground_color_code};48;5;{background_color_code}m
     [3(0-8)m: Foreground color [0;3(0-8)m (0; is  the  reset 0)
     [4(0-8)m: Background color [0;4(0-8)m
 

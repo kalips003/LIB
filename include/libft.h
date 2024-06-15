@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agallon <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 20:06:26 by agallon           #+#    #+#             */
-/*   Updated: 2024/06/03 17:24:23 by agallon          ###   ########.fr       */
+/*   Updated: 2024/06/11 18:25:01 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 # include <errno.h>
 # include <fcntl.h>
 # include <limits.h>
+# include <math.h>
 # include <signal.h>
 # include <stdarg.h>
 # include <stddef.h>
