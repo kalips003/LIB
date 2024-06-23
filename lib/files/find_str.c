@@ -6,11 +6,11 @@
 /*   By: kalipso <kalipso@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/09 20:34:49 by agallon           #+#    #+#             */
-/*   Updated: 2024/06/23 16:42:45 by kalipso          ###   ########.fr       */
+/*   Updated: 2024/06/23 17:16:45 by kalipso          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../inc/libft.h"
+#include "libft.h"
 
 //////////////////////////////////////////////////////
 //  #   FIND SUBSTRING, RETURN POSI, -1 IF NOT FOUND
