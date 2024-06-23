@@ -1,5 +1,17 @@
-#include "../include/libft.h"
-// #include "../include/pipex.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   test.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kalipso <kalipso@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/19 17:54:09 by kalipso           #+#    #+#             */
+/*   Updated: 2024/06/23 17:14:19 by kalipso          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../inc/libft.h"
+// #include "../inc/project.h"
 
 /*******************************************************************************
 *******************************************************************************/
@@ -12,6 +24,8 @@
 ██╔══██║  ██╔══╝░░██╔══██║██║██╔══██╗██╔══╝░░
 ██║░░██║  ██║░░░░░██║░░██║██║██║░░██║███████╗
 ╚═╝░░╚═╝  ╚═╝░░░░░╚═╝░░╚═╝╚═╝╚═╝░░╚═╝╚══════╝
+LIB
+makefile w/o cat
 
 
 
@@ -20,38 +34,75 @@
 
 
 
-
-<?> .PHONY: test - This declares that test is a phony target, meaning it's not associated with a file. </?>
+<?> .PHONY: test - This declares that test is a phony target, 
+	meaning it's not associated with a file. </?>
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 // MACRO
 // #define funct(ap, type)    (*(type *)((ap += sizeof(type)) - sizeof(type)))
-# define PI 3.14159265358979323846
+#define PI 3.14159265358979323846
 
 ///////////////////////////////////////////////////////////////////////////////]
 int	main(int ac, char **av, char **env)
 {
-	int outfile = open("test_file", W_AP, 0777);
-	ft_print_cat(1, "lakdjsfshla", 0);
-	print_fd(outfile, "this is a test that shoudl write");
-	close(outfile);
-
+	put("we want:\n\
+		→ 0: cos=1, sin =0\n\
+		↓ 1: cos=0, sin =1\n\
+		← 2: cos=-1, sin =0\n\
+		↑ 3: cos=0, sin =-1\n");
+	int a;
+	int b;
+	int i = -1;
+	while (++i < 4)
+	{
+		b = (int)sin(i * PI / 2);
+		a = (int)cos(i * PI / 2);
+		printf("%d: cos= %.1d, sin = %.1d\n", i, a, b);
+	}
+	printf("--->%d\n\n\n\n", (int)round(0.49));
+	char *string = str("asdf%dalosdif", 123);
+	put("=%s=\n",  string);
+	free(string);
+	put(BLINK"->BREAK POINT:\n");
+	free_s(gnl(0));
+	put(CLS"=hello  again=\n");
 	return (0);
 }
 ///////////////////////////////////////////////////////////////////////////////]
-void    f_()
-{
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-does somethign
 
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-}
-///////////////////////////////////////////////////////////////////////////////]
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	// int	fd = open("map/map3.ber", O_RDONLY);
+	// if (fd == -1)
+	// 	return (put("error fd\n"));
+	// char *line = NULL;
+	// while ((line = gnl(fd)) != NULL)
+	// {
+	// 	put("%S"RESET, line);
+	// 	free_s(line);
+	// }
+	// close(fd);
+	// put("we want:\n\
+	// 	→ 0: cos=1, sin =0\n\
+	// 	↓ 1: cos=0, sin =1\n\
+	// 	← 2: cos=-1, sin =0\n\
+	// 	↑ 3: cos=0, sin =-1\n");
+	// int a;
+	// int b;
+	// int i = -1;
+	// while (++i < 4)
+	// {
+	// 	b = (int)sin(i * PI / 2);
+	// 	a = (int)cos(i * PI / 2);
+	// 	printf("%d: cos= %.1d, sin = %.1d\n", i, a, b);
+	// }
+	// printf("--->%d\n\n\n\n", (int)round(0.49));
+	// char *string = str("asdf%dalosdif", 123);
+	// put("=%s=\n",  string);
+	// free(string);
+	// put(BLINK"->BREAK POINT:\n");
+	// free_s(gnl(0));
+	// put(CLS"=hello  again=\n");
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-
-
 //  			GITHUB
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 git pull
@@ -71,16 +122,13 @@ git push origin feature-branch:main
 	git stash
 // Switch Branches: After stashing your changes, you can switch branches.
 	git checkout <branch-name>
-// Apply Stashed Changes: When you're ready, you can apply your stashed changes to the new branch.
+// Apply Stashed Changes: you can apply your stashed changes to the new branch.
 	git stash apply
-// Pop Stashed Changes: Alternativzely, you can apply and remove the stashed changes in one step.
+// Pop Stashed Changes: you can apply and remove the stashed changes in one step
 	git stash pop
 // List Stashes: To see a list of stashed changes, you can use:
 	git stash list
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-
-
 //  			BIWISE
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 while (((condition1) & bit) || ((condition2) & ~bit))

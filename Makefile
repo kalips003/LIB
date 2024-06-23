@@ -1,9 +1,11 @@
-NAME = pipex
-NAME_BONUS = pipex_bonus
+NAME = so_long
+NAME_BONUS = so_long_bonus
 
 CC = cc
-# FLAGS = -Wextra -Wall -Werror -g -fPIE
-FLAGS = -Wall -Werror -Wextra -g -fPIE -I$(HEADER_FOLDER) -lm
+FLAGS = -Wextra -Wall -Werror -g -fPIE -I$(HEADER_FOLDER) -lm
+# FLAGS = -Wextra -Wall -g -fPIE
+# CFLAGS = -Wall -Werror -Wextra -g -fPIE -I$(HEADER_FOLDER) -lm
+# FLAGS = -g -fPIE
 
 all: $(NAME)
 
@@ -11,90 +13,112 @@ all: $(NAME)
 # │                  	 	        TESTING                    	         │
 # ╰──────────────────────────────────────────────────────────────────────╯
 
-INFILE = in_file
-OUTFILE = out_file
-OUTFILE_OK = out_file_ok
-HEREDOC = here_doc STOP
+# big map, 3 pika
+MAPG = good_map.ber
+# big map, 3 pika
+MAP1 = map1.ber
+# big square, no pika
+MAP2 = map2.ber
+# medium square, lots of pika
+MAP3 = map3.ber
+# small square, 1 pika
+MAP4 = map4.ber
+# only balls
+MAP5 = map5.ber
 
-ARGS1 = "wc -c" "wc -c" "wc -c" "wc -c"
-BASH1 = wc -c | wc -c | wc -c | wc -c
 
-ARGS2 = "ls -la" "ls -la"
-BASH2 = ls -la | ls -la
+a: libft mlx $(NAME_BONUS) inc/so_long_bonus.h
+	@$(call random_shmol_cat, "\'tis good map", 'hav fun ね? (make m for testeur mandatory)', $(CLS), );
+	@echo "\tuse -WASD- or →↓←↑ to move around"
+	@echo "\tuse -SPACE- to throw ball"
+	@echo "\tpress -CTRL-l- to toogle run"
+	@echo "\tpress -E- to print memory"
+	@echo "\n\t\033[5m~ Press Enter to start, and good luck... ~\033[0m"
+	@read -p "" key
+	./$(NAME_BONUS) map/$(MAPG)
 
-ARGS3 = "cat" "cat"
+b: libft mlx $(NAME_BONUS)
+	@$(call random_shmol_cat, teshting ... $@ !, " $(NAME_BONUS): ", $(CLS), );
+	-$(VALGRIND) ./$(NAME_BONUS) map/$(MAP2)
 
-files:
-	@rm -f $(INFILE) $(OUTFILE) $(OUTFILE_OK)
-	@rm -f 
-	@touch $(INFILE)
+c: libft mlx $(NAME_BONUS)
+	@$(call random_shmol_cat, teshting ... $@ !, " $(NAME_BONUS): ", $(CLS), );
+	-$(VALGRIND) ./$(NAME_BONUS) map/$(MAP5)
 
-a: libft $(NAME) files
-	$(call mandatory,  $(ARGS1), $(BASH1));
+v: libft mlx $(NAME_BONUS)
+	@$(call random_shmol_cat, "vlgrininnng ... $(NAME_BONUS)!", "$@: $(MAP1)", $(CLS), );
+	-$(VALGRIND) ./$(NAME_BONUS) map/$(MAP1)
+	@echo $(RESET);
 
-b: libft $(NAME_BONUS) files
-	@$(call random_shmol_cat, teshting ... $@ !, "$(NAME_BONUS):", $(CLS)\n, )
-	./$(NAME_BONUS) here_doc END $(ARGS3) $(OUTFILE)
-	@echo "\n\tOutfile content:"
-	@cat $(OUTFILE)
+# ---------------------------------------------------------------------- >
+BAD_MAPS = map_bad_not_rect1.ber map_no_collec.ber map_no_player.ber \
+			map_no_exit.ber map_many_exit.ber \
+			map_many_player.ber map_bad_wall.ber \
+			map_bad_enclosed_e.ber map_bad_enclosed_c.ber \
+			map_bad_tile.ber
 
-d:
-	cat << END | cat >> out_file_ok
+# map=$$($(eval echo $$arg));
+m: libft mlx $(NAME)
+	@for map in $(BAD_MAPS); do \
+	$(call random_shmol_cat, teshting lots of bad miaps:, $$map shouldt run..., $(CLS), ); \
+	$(VALGRIND) ./$(NAME) map/map_bad/$$map; \
+	echo "\t\033[5m~ Press Enter to continue...\033[0m"; \
+	read -p "" key; \
+	done
+#
+	@$(call shmol_cat_color, $(COLOR_5R_0G_5B), $(COLOR_5R_2G_3B), teshing with bad map name!, map_multiplayer.be, $(CLS), );
+	-$(VALGRIND) ./$(NAME) map/map_multiplayer.be
+	@echo "\t\033[5m~ Press Enter to continue...\033[0m"
+	@read -p "" key;
+	@$(call shmol_cat_color, $(COLOR_5R_0G_5B), $(COLOR_5R_2G_3B), teshing with bad map name!, mapzzzzz.ber, $(CLS), );
+	-$(VALGRIND) ./$(NAME) map/mapzzzzz.ber
+	@echo "\t\033[5m~ Press Enter to continue...\033[0m"
+	@read -p "" key
+#
+	@$(call random_shmol_cat, teshing too much args, "$(MAP1) abc", $(CLS), );
+	-$(VALGRIND) ./$(NAME) map/$(MAP1) map/$(MAP2)
+	@echo "\t\033[5m~ Press Enter to continue...\033[0m"
+	@read -p "" key
+#
+	@$(call shmol_cat_color, $(COLOR_5R_0G_5B), $(COLOR_5R_2G_3B), teshing with empty file, map_blank.ber, $(CLS), );
+	@echo "$(RED)"
+	touch ./map/map_blank.ber
+	@echo "$(COLOR_5R_0G_5B)"
+	-$(VALGRIND) ./$(NAME) map/map_blank.ber
+	@echo "\t\033[5m~ Press Enter to continue...\033[0m"
+	@read -p "" key
+#
+	@$(call shmol_cat_color, $(COLOR_5R_4G_0B), $(COLOR_5R_2G_3B), teshing with a sprite file renamed!!!, , $(CLS), );
+	@echo "$(RED)"
+	mv ./img/player/player_0.xpm ./img/player/player_007.xpm
+	@echo "$(COLOR_5R_4G_0B)"
+	-$(VALGRIND) ./$(NAME) map/$(MAP3)
+	@echo "$(RED)"
+	mv ./img/player/player_007.xpm ./img/player/player_0.xpm
+	@echo "\t\033[5m~ Press Enter to continue...\033[0m"
+	@read -p "" key
+#
+	@$(call random_shmol_cat, "\'tis good map Mandatory", "try n break it.. にゃ?", $(CLS), );
+	@echo "\t\033[5m~ Press Enter to continue...\033[0m"
+	@read -p "" key
+	-$(VALGRIND) ./$(NAME) map/$(MAP3)
 
-v: libft $(NAME) files
-	$(call mandatory_valgrind,  $(ARGS1), $(BASH1));
+m2: libft mlx $(NAME)
+	@$(call random_shmol_cat, "\'tis good map Mandatory", "try n break it.. にゃ?", $(CLS), );
+	@echo "\t\033[5m~ Press Enter to continue...\033[0m"
+	@read -p "" key
+	-$(VALGRIND) ./$(NAME) map/$(MAP3)
 
-# ---------------------
-maieul: $(NAME) $(NAME_BONUS)
-	@$(call print_cat_test, $(COLOR_5R_3G_1B), $(COLOR_0R_2G_3B), "にゃ~", "~ teshing $@! ~");
-	@if [ ! -e traces ]; then\
-		mkdir -p traces;\
-	fi
-	@rm -f traces/trace*
-	strace -e dup2,dup,openat,clone,read,write,access,close,execve,pipe,pipe2 -tt -ff -o traces/trace \
-	./pipex in 'ls -la' 'wc -l' /dev/stdout
-	strace-log-merge traces/trace | batcat -lstrace
+# ╭──────────────────────────────────────────────────────────────────────╮
+# │                  	 	        SOURCES                    	         │
+# ╰──────────────────────────────────────────────────────────────────────╯
 
-# $(ARGS2) $(BASH2)
-# -------------------------------------------------> PIPEX
-define mandatory
-	@clear
-	@$(call random_shmol_cat, teshting ... $@ !, "$(NAME):", , )
-	./$(NAME) $(INFILE) $(1) $(OUTFILE)
-	@echo "\n\tOutfile content:"
-	@cat $(OUTFILE)
-	@$(call random_shmol_cat, teshting: $(1) !, outputs should be identical:, , )
-	< $(INFILE) $(2) > $(OUTFILE_OK)
-	@echo "\n\tOutfile control content:"
-	@cat $(OUTFILE_OK)
-endef
+SRC = $(wildcard src/*.c)
+OBJ = $(patsubst src/%.c, src/obj/%.o, $(SRC))
 
-define mandatory_valgrind
-	@clear
-	@$(call random_shmol_cat, teshting ... $@ !, "$(NAME):", , )
-	-$(VALGRIND) ./$(NAME) $(INFILE) $(1) $(OUTFILE)
-	@echo "\n\tOutfile content:"
-	@cat $(OUTFILE)
-	@$(call random_shmol_cat, teshting: $(1) !, outputs should be identical:, , )
-	< $(INFILE) $(2) > $(OUTFILE_OK)
-	@echo "\n\tOutfile control content:"
-	@cat $(OUTFILE_OK)
-endef
-
-# ------------------------------------------
-# # map=$$($(eval echo $$arg));
-# m: libft mlx $(NAME)
-# 	@for map in $(BAD_MAPS); do \
-# 	$(call random_shmol_cat, teshting lots of bad miaps:, $$map shouldt run..., $(CLS), ); \
-# 	$(VALGRIND) ./$(NAME) map/map_bad/$$map; \
-# 	echo "\t\033[5m~ Press Enter to continue...\033[0m"; \
-# 	read -p "" key; \
-# 	done
-# #
-# 	@$(call random_shmol_cat, "\'tis good map Mandatory", "try n break it.. にゃ?", $(CLS), );
-# 	@echo "\t\033[5m~ Press Enter to continue...\033[0m"
-# 	@read -p "" key
-# 	-$(VALGRIND) ./$(NAME) map/$(MAP3)
+SRC_FOLDER = src
+OBJ_FOLDER = src/obj
+HEADER_FOLDER = inc
 
 # ╭──────────────────────────────────────────────────────────────────────╮
 # │                  	 	        Libft                      	         │
@@ -115,13 +139,6 @@ libtest:
 # ╭──────────────────────────────────────────────────────────────────────╮
 # │                  	 	       PROJECT                   	         │
 # ╰──────────────────────────────────────────────────────────────────────╯
-
-SRC = $(wildcard src/*.c)
-OBJ = $(patsubst src/%.c, src/obj/%.o, $(SRC))
-
-HEADER_FOLDER = include
-SRC_FOLDER = src
-OBJ_FOLDER = src/obj
 
 $(NAME): libft $(OBJ) main.c
 	@clear
@@ -152,24 +169,23 @@ OBJ_FOLDER_B = src_bonus/obj
 
 $(NAME_BONUS): bonus
 
-bonus: libft $(OBJ) main_bonus.c
+bonus: libft $(OBJ_B) main_bonus.c inc/so_long.h
 	@clear
-	@if ! $(CC) $(FLAGS) $(OBJ) main_bonus.c lib/libft.a -o $(NAME_BONUS); then \
+	@if ! $(CC) $(FLAGS) $(OBJ_B) main_bonus.c lib/libft.a -o $(NAME_BONUS); then \
 		$(call print_cat, "", $(RED), $(GOLD), $(RED_L), $(call pad_word, 10, "ERROR"), $(call pad_word, 12, "COMPILING..")); \
 		exit 1; \
 	fi
 	$(call print_cat, $(CLEAR), $(GOLD), $(GREEN1), $(COLOR_4R_1G_5B), $(call pad_word, 10, $(NAME_BONUS)), $(call pad_word, 12, "Compiled~"));
 
-
-# src_bonus/obj/%.o: src_bonus/%.c
-# 	@clear
-# 	@if [ ! -e $(OBJ_FOLDER) ]; then\
-# 		mkdir -p $(OBJ_FOLDER);\
-# 	fi
-# 	@if ! $(CC) -c $(FLAGS) -I$(HEADER_FOLDER) -Imlx_linux -O3 -c $< -o $@; then \
-# 		$(call shmol_cat_error, $(RED), $(RED_L)); \
-# 		exit 1; \
-# 	fi
+src_bonus/obj/%.o: src_bonus/%.c inc/so_long_bonus.h
+	@clear
+	@if [ ! -e $(OBJ_FOLDER_B) ]; then\
+		mkdir -p $(OBJ_FOLDER_B);\
+	fi
+	@if ! $(CC) -c $(FLAGS) -O3 -c $< -o $@; then \
+		$(call shmol_cat_error, $(RED), $(RED_L)); \
+		exit 1; \
+	fi
 
 # ╭──────────────────────────────────────────────────────────────────────╮
 # │                  	 	       OTHERS	                   	         │
@@ -185,20 +201,19 @@ test:	libft
 	@$(call random_cat, $(call pad_word, 12, "Making"), $(call pad_word, 14, "Science"), $(CLS), $(RESET));
 	@lib/a.out
 
-test2:	mlx libft $(OBJ) include/so_long.h
+test2:	libft $(OBJ_B)
 	@rm -f ./lib/a.out
-	@cc ./lib/test.c $(OBJ) -I$(HEADER_FOLDER) lib/libft.a -lm -o ./lib/a.out
+	@cc ./lib/test.c $(OBJ_B) -I$(HEADER_FOLDER) lib/libft.a -lm -o ./lib/a.out
 	@$(call random_cat, $(call pad_word, 12, "TESTING"), $(call pad_word, 14, "SCIENCE"), $(CLS), $(RESET));
-	-@$(VALGRIND) lib/a.out
+	-@$(VALGRIND) lib/a.out map/map4.ber
 
 vtest:	libft
 	@cc -g3 ./lib/test.c ./lib/libft.a -o ./lib/a.out -lm
 	$(call print_cat, "", $(RED), $(GOLD), $(BLUE1), $(call pad_word, 10, "TESTING"), $(call pad_word, 12, "SCIENCE.."));
 	@$(VALGRIND) lib/a.out
 
-# 
 clean:
-	@rm -rf $(OBJ_FOLDER) $(INFILE) $(OUTFILE) $(OUTFILE_OK)
+	@rm -rf $(OBJ_FOLDER)
 	$(call print_cat, $(CLEAR), $(COLOR_2R_2G_5B), $(COLOR_3R_2G_0B), $(COLOR_4R_5G_0B), $(call pad_word, 10, "Objects"), $(call pad_word, 12, "Exterminated"));
 
 fclean: clean
@@ -215,8 +230,8 @@ re_bonus: fclean
 .SILENT: $(NAME) bonus
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -  - -  - VALGRIND
-# VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s --track-fds=yes
-VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s --trace-children=yes --track-fds=yes
+VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s --track-fds=yes
+# VALGRIND = valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes -s --trace-children=yes --track-fds=yes
 #
 # lldb: clean all
 # 	@lldb ./$(NAME) $(ARGS)
@@ -230,7 +245,7 @@ git: fclean
 	git commit -m "$$current_date"; \
 	git push
 
-NORM_FILE = src/
+NORM_FILE = src_bonus/
 
 norm: fclean
 	@$(call random_shmol_cat_blink, 掃除してるかな..、いいね、いいねえー, giv file to norm, $(CLS), );
@@ -329,7 +344,7 @@ endef
 # @$(call random_shmol_cat, text 1, text 2, $(CLS), $(RESET));
 # $(1)= $(CLEAR); $(2)= text1; $(3)= text2; $(4)= $(RESET)
 define random_shmol_cat
-	COLOR=$$(printf "\033[38;5;%dm" $$(shuf -i 0-255 -n 1)); \
+	COLOR=$$(printf "\033[38;5;%dm" $$(shuf -i 1-255 -n 1)); \
 	COLOR2=$$(printf "\033[38;5;%dm" $$(shuf -i 0-255 -n 1)); \
 	echo "$(3)$${COLOR2}\
 	\tにゃ~$${COLOR}\t⠀╱|、\n\
@@ -379,7 +394,7 @@ endef
 
 # 					Define all 256 colors
 CLEAR = \033[2J\033[H
-CLS = \e[2J\e[H
+CLS = \033[2J\033[H
 RESET = \033[0m
 BLINK = \033[5m
 # U+2800 to U+28FF Braile
